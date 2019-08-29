@@ -1,0 +1,45 @@
+#!/bin/bash
+#title        : solarsurface
+#description  : start/stop/restart solarsurface
+#########################################
+### install   : cp solarsurface /etc/init.d/
+#               update-rc.d solarsurface defaults
+### uninstall : update-rc.d -f solarsurface remove
+### BEGIN INIT INFO
+# Provides: solarsurface
+# Required-Start:
+# Required-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: solarsurface
+# Description: Fadecandy USB service
+### END INIT INFO
+PROCESSING_SCRIPT=/bin/processing_script.sh
+PID_FILE=/tmp/solarsurface.pid
+
+case "$1" in
+    start)
+        echo "Starting solarsurface service..."
+
+        COMMAND_TO_RUN=`start-stop-daemon -S -b -m -p $PID_FILE -x $PROCESSING_SCRIPT& :`
+        setsid sh -c $COMMAND_TO_RUN> /dev/null 2>&1 < /dev/null
+
+        echo -e "\E[31;33m[ OK ]\E[0m"
+        ;;
+    stop)
+        echo "Stopping solarsurface service..."
+
+        killall Xvfb
+
+        echo -e "\E[31;33m[ OK ]\E[0m"
+        ;;
+    restart|reload)
+        "$0" stop
+        "$0" start
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart}"
+        exit 1
+esac
+
+exit $?
